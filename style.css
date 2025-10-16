@@ -26,6 +26,8 @@ h3 {
 
 /* style for the whole card */
 .card {
+  display: flex;
+  flex-direction: column;
   position: relative;
   /* background-color: rgb(118, 118, 202); */
   width: 414px;
@@ -86,6 +88,8 @@ path {
 /* button style */
 #toggle-button {
     position: relative;
+    align-self: flex-end;
+    right: 10px;
     width: 101.14px;
     height: 101.14px;
     margin-top: 10px;
@@ -100,8 +104,6 @@ path {
 
 .week {
   color: black;
-  display: flex;
-  flex-direction: column;
   margin-top: 50px;
   /* top: 561.4px; */
 }
