@@ -107,7 +107,7 @@ let currentWeather: weatherData | null = null
             <img 
                 src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
                 class="weather-icon"
-                alt="weather icon">
+                alt="weather-icon">
             `;
         };
         displayCondition(currentWeather.condition);
