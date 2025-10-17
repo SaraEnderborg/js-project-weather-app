@@ -105,7 +105,7 @@ path {
   flex-direction: row;
   justify-content: space-between;
   color: black;
-  margin-top: 50px;
+  margin-top: auto;
 }
 
 .weekday, .weather-icon, .temp {
