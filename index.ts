@@ -20,7 +20,7 @@ type weatherData = {
   condition: string
 }
 
-const places = [
+const places: any = [
     { name: 'oslo', lat: 59.913245, lon: 59.913245 },
     { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
 ];
@@ -89,7 +89,7 @@ let currentWeather: weatherData | null = null
 
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
-        const displayDegrees = (array) => {
+        const displayDegrees = (array: any) => {
             degreesContainer.innerHTML = '';
             degreesContainer.innerHTML = `
             <h1>${currentWeather.airTemp}</h1>
@@ -100,7 +100,7 @@ let currentWeather: weatherData | null = null
 
         // display the weather condition in the DOM
         const conditionContainer = document.querySelector('.condition');
-        const displayCondition = (condition) => {
+        const displayCondition = (condition: any) => {
             conditionContainer.innerHTML = '';
             conditionContainer.innerHTML = `
             <h3>${actualCondition}</h3>
@@ -114,7 +114,7 @@ let currentWeather: weatherData | null = null
 
         // display the location in the DOM
         const locationContainer = document.querySelector('.location');
-        const displayLocation = (place) => {
+        const displayLocation = (place: any) => {
             locationContainer.innerHTML = '';
             locationContainer.innerHTML = `
             <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
