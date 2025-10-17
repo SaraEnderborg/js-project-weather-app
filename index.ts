@@ -93,7 +93,7 @@ let currentWeather: weatherData | null = null
             degreesContainer.innerHTML = '';
             degreesContainer.innerHTML = `
             <h1>${currentWeather.airTemp}</h1>
-            <h2>c</h2>
+            <h2>°c</h2>
             `;
         };
         displayDegrees(currentWeather);
@@ -122,28 +122,17 @@ let currentWeather: weatherData | null = null
         }
         displayLocation(places[1].name);
 
-
-
         
        }
-        
-        console.log(currentWeather);
-        currentWeather();
-    }
-    catch (error) {
+        catch (error) {
         console.log(`Error caught, ${error}`);
         fetchWeather();
 
-        // currentWeather = data.timeSeries[0].data
-       
-
-      
-
-    // }    
-    // catch (error) {
-    //     console.log(`caught an error, ${error}`);
-    // }    
-});    
+        console.log(currentWeather);
+        currentWeather();
+    }
+        // currentWeather = data.timeSeries[0].data  
+};    
 fetchWeather();
 
 const today = new Date();

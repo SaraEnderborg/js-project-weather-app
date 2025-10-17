@@ -17,6 +17,7 @@ h1 {
 
 h2 {
   font-size: 34px;
+  margin-top: 12px;
 }
 
 h3 {
@@ -63,7 +64,7 @@ path {
 .degrees {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: cent;
 }
 
 .condition {
