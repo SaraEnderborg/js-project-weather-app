@@ -84,30 +84,19 @@ path {
 }
 
 /* button style */
-#toggle-button {
+ #toggle-button {
     position: relative;
     align-self: flex-end;
     right: 10px;
-    width: 101.14px;
-    height: 101.14px;
+    width: 104px;
+    height: 104px;
     margin-top: 10px;
-    background-color: rgba(133, 137, 255, 1);
+    background-color: #ffffff00;
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
     z-index: 200;
-}
-
-/* #path {
-    position: absolute;
-    width: 13.83px;
-    height: 27.66px;
-    left: 321.99px;
-    top: 435.91px;
-    border: 4px solid #FFFFFF;
-    z-index: 201;} */
+} 
 
 .week {
   display: flex;
