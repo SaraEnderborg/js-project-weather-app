@@ -35,24 +35,24 @@ h3 {
   padding: 30px;
   margin: 60px;
   box-sizing: border-box;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1) ;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* style for upper part */
 svg {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 0;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
 path {
-    position: absolute;
-    width: 414px;
-    top: 0;
-    left: 0;
-    z-index: 0;
+  position: absolute;
+  width: 414px;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
 .summary {
@@ -85,19 +85,19 @@ path {
 }
 
 /* button style */
- #toggle-button {
-    position: relative;
-    align-self: flex-end;
-    right: 10px;
-    width: 104px;
-    height: 104px;
-    margin-top: 10px;
-    background-color: #ffffff00;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    z-index: 200;
-} 
+#toggle-button {
+  position: relative;
+  align-self: flex-end;
+  right: 10px;
+  width: 104px;
+  height: 104px;
+  margin-top: 10px;
+  background-color: #ffffff00;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  z-index: 200;
+}
 
 .week {
   display: flex;
@@ -107,7 +107,9 @@ path {
   margin-top: auto;
 }
 
-.weekday, .weather-icon, .temp {
+.weekday,
+.weather-icon,
+.temp {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
