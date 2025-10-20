@@ -85,7 +85,7 @@ path {
 }
 
 /* button style */
-#toggle-button {
+ #toggle-button {
     position: relative;
     align-self: flex-end;
     right: 10px;
