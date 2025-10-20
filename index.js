@@ -42,26 +42,21 @@ const weatherSymbols = {
     26: "Moderate snowfall",
     27: "Heavy snowfall"
 };
-let currentWeather = null;
-// const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
-//     try {
-//         const response = yield fetch(weatherURL);
-//         if (!response.ok)
-//             throw new Error(`HTTP error: ${response.status}`);    
-//         const data = yield response.json();
-//         console.log('data', data);
-async function fetchWeather() {
+let currentWeather;
+const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const response = await fetch(weatherURL);
+        const response = yield fetch(weatherURL);
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
-        const data = await response.json();
+        const data = yield response.json();
+        console.log('data', data);
+        // currentWeather = data.timeSeries[0].data
         currentWeather = {
             airTemp: Math.round(data.timeSeries[0].data.air_temperature),
             condition: data.timeSeries[0].data.symbol_code
         };
         // a way to get a hold of the actually mening of the weather symbols (found in the docs)
-        const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
+        const actualCondition = weatherSymbols[currentWeather.condition];
         console.log('airTemp', currentWeather.airTemp);
         console.log('condition', currentWeather.condition);
         console.log('actualCondition', actualCondition);
@@ -83,7 +78,9 @@ async function fetchWeather() {
             conditionContainer.innerHTML = `
             <h3>${actualCondition}</h3>
             <img 
-                src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
+              
+                  
+                ""  src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
                 class="weather-icon"
                 alt="weather icon">
             `;
@@ -99,23 +96,10 @@ async function fetchWeather() {
         };
         displayLocation(places[1].name);
     }
-    finally {
+    catch (error) {
+        console.log(`caught an error, ${error}`);
     }
-    console.log(currentWeather);
-    currentWeather();
-}
-try {
-}
-catch (error) {
-    console.log(`Error caught, ${error}`);
-    fetchWeather();
-    // currentWeather = data.timeSeries[0].data
-    // }    
-    // catch (error) {
-    //     console.log(`caught an error, ${error}`);
-    // }    
-}
-;
+});
 fetchWeather();
 const today = new Date();
 console.log('today', today);
