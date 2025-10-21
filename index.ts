@@ -8,13 +8,23 @@ type place = {
 type weatherData = {
     airTemp: number,
     condition: string
+    validTime: string
+}
+
+type forecastItem = {
+    forecastAirTemp: number,
+    forecastCondition: string
+    validTime: string
 }
 
 const places: any = [
     { name: 'oslo', lat: 59.913245, lon: 59.913245 },
     { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
 ];
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
+// const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
+const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=120`;
+
+const hourIndex = 0; // index for current weather data (0 hours ahead)  
 
 const weatherSymbols = {
     1: "Clear sky",
@@ -48,7 +58,7 @@ const weatherSymbols = {
 
 
 let currentWeather: weatherData | null = null
-let forecastWeather: weatherData[] = [];
+let forecastWeather: forecastItem[] = [];
 
 
 async function fetchWeather(): Promise<void> {
@@ -63,10 +73,15 @@ async function fetchWeather(): Promise<void> {
             condition: data.timeSeries[0].data.symbol_code
         }; 
 
-        forecastWeather = {
-            forecastAirTemp: Math.round(data.timeSeries[23].data.air_temperature),
-            forecastCondition: data.timeSeries[23].data.symbol_code
-        }; 
+        // get forecast for 5 days later
+        // e.g. 0, 24, 48, 72, 96, 120 hours later
+        forecastWeather = [0, 24, 48, 72, 96].map((hoursAhead) => {
+            const item = data.timeSeries[hourIndex];
+            return {
+                forecastAirTemp: Math.round(item.data.air_temperature),
+                forecastCondition: item.data.symbol_code
+            };
+        });
 
           // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
         const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
@@ -114,12 +129,13 @@ async function fetchWeather(): Promise<void> {
         }
         displayLocation(places[1].name);
 
-        const forecastIconContainer = document.querySelector('.forecast');
-        const displayForecastIcon = (array: any) => {
+        // display the forecast icons in weekdays in the DOM
+        const forecastIconContainer = document.querySelector('.weather-icons');
+        const displayForecastIcons = (items:forecastItem[]) => {
             forecastIconContainer.innerHTML = '';
             // loop through the forecastWeather array and display each item
-            array.forEach((item: any) => {
-                forecastContainer.innerHTML += `
+            items.forEach((item: any) => {
+                forecastIconContainer.innerHTML += `
                 <div class="forecast-icons">
                     <img 
                         src="./weather_icons/aligned/solid/day/${String(item.forecastCondition).padStart(2, '0')}.svg" 
@@ -129,7 +145,7 @@ async function fetchWeather(): Promise<void> {
                 `;
             });
         };
-        displayForecastIcon(forecastWeather);
+        displayForecastIcons(forecastWeather);
 
         }
         catch (error) {
