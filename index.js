@@ -3,7 +3,7 @@ const places = [
     { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
 ];
 // const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=120`;
+const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`;
 const hourIndex = 0; // index for current weather data (0 hours ahead)  
 const weatherSymbols = {
     1: "Clear sky",
@@ -47,12 +47,14 @@ async function fetchWeather() {
             condition: data.timeSeries[0].data.symbol_code
         };
         // get forecast for 5 days later
-        // e.g. 0, 24, 48, 72, 96, 120 hours later
-        forecastWeather = [0, 24, 48, 72, 96].map((hoursAhead) => {
-            const item = data.timeSeries[hourIndex];
+        // e.g. 24, 48, 72, 96, 120 hours later
+        forecastWeather = [24, 48, 72].map((hoursAhead) => {
+            const item = data.timeSeries[hoursAhead];
+            console.log('item', item);
             return {
                 forecastAirTemp: Math.round(item.data.air_temperature),
-                forecastCondition: item.data.symbol_code
+                forecastCondition: item.data.symbol_code,
+                validTime: item.validTime
             };
         });
         // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
@@ -63,6 +65,8 @@ async function fetchWeather() {
         console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
         console.log('data', data);
         console.log('forecast data', data.timeSeries);
+        console.log(currentWeather);
+        console.log(forecastWeather);
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
         const displayDegrees = (array) => {
@@ -112,11 +116,23 @@ async function fetchWeather() {
             });
         };
         displayForecastIcons(forecastWeather);
+        // display forecast temperatures in the DOM
+        const forecastTempContainer = document.querySelector(".temp");
+        const displayForecastTemps = (items) => {
+            forecastTempContainer.innerHTML = '';
+            // loop through the forecastWeather array and display each item
+            items.forEach((item) => {
+                forecastTempContainer.innerHTML += `
+                <div class="forecast-temps-item">
+                    <p>${item.forecastAirTemp}°c</p>
+                </div>
+                `;
+            });
+        };
+        displayForecastTemps(forecastWeather);
     }
     catch (error) {
         console.log(`Error caught, ${error}`);
-        console.log(currentWeather);
-        console.log(forecastWeather);
     }
 }
 ;
