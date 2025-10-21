@@ -26,7 +26,7 @@ const places: any = [
 ];
 const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
 
-const weatherSymbols = {
+const weatherSymbols:Record<number, string> = {
   1: "Clear sky",
   2: "Nearly clear sky",
   3: "Variable cloudiness",
@@ -57,6 +57,7 @@ const weatherSymbols = {
 };
 
 
+
 let currentWeather: weatherData | null = null
 
 // const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -80,7 +81,7 @@ let currentWeather: weatherData | null = null
         }; 
 
           // a way to get a hold of the actually mening of the weather symbols (found in the docs)
-        const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
+        const actualCondition = weatherSymbols[Number(currentWeather.condition)]
         
         console.log('airTemp', currentWeather.airTemp);
         console.log('condition', currentWeather.condition);
@@ -90,35 +91,44 @@ let currentWeather: weatherData | null = null
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
         const displayDegrees = (array: any) => {
+          if (degreesContainer) {
             degreesContainer.innerHTML = '';
             degreesContainer.innerHTML = `
-            <h1>${currentWeather.airTemp}</h1>
+            <h1>${currentWeather?.airTemp}</h1>
             <h2>°c</h2>
             `;
+         }
         };
         displayDegrees(currentWeather);
 
         // display the weather condition in the DOM
         const conditionContainer = document.querySelector('.condition');
         const displayCondition = (condition: any) => {
+
+          if (conditionContainer) {
             conditionContainer.innerHTML = '';
             conditionContainer.innerHTML = `
             <h3>${actualCondition}</h3>
             <img 
-                src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
+                src="./weather_icons/aligned/solid/day/${String(currentWeather?.condition).padStart(2, '0')}.svg" 
                 class="weather-icon"
                 alt="weather-icon">
             `;
+          }
+            
         };
         displayCondition(currentWeather.condition);
 
         // display the location in the DOM
         const locationContainer = document.querySelector('.location');
         const displayLocation = (place: any) => {
-            locationContainer.innerHTML = '';
+          if (locationContainer) {
+              locationContainer.innerHTML = '';
             locationContainer.innerHTML = `
             <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
             `;
+          }
+          
         }
         displayLocation(places[1].name);
 
@@ -129,7 +139,6 @@ let currentWeather: weatherData | null = null
         fetchWeather();
 
         console.log(currentWeather);
-        currentWeather();
     }
         // currentWeather = data.timeSeries[0].data  
 };    
