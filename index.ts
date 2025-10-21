@@ -1,23 +1,13 @@
-// "use strict";
-// var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-//     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-//     return new (P || (P = Promise))(function (resolve, reject) {
-//         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-//         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-//         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-//         step((generator = generator.apply(thisArg, _arguments || [])).next());
-//     });
-// };
 
 type place = {
-  name: string,
-  lat: number,
-  lon: number
+    name: string,
+    lat: number,
+    lon: number
 }
 
 type weatherData = {
-  airTemp: number,
-  condition: string
+    airTemp: number,
+    condition: string
 }
 
 const places: any = [
@@ -27,65 +17,67 @@ const places: any = [
 const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
 
 const weatherSymbols = {
-  1: "Clear sky",
-  2: "Nearly clear sky",
-  3: "Variable cloudiness",
-  4: "Halfclear sky",
-  5: "Cloudy sky",
-  6: "Overcast",
-  7: "Fog",
-  8: "Light rain showers",
-  9: "Moderate rain showers",
-  10: "Heavy rain showers",
-  11: "Thunderstorm",
-  12: "Light sleet showers",
-  13: "Moderate sleet showers",
-  14: "Heavy sleet showers",
-  15: "Light snow showers",
-  16: "Moderate snow showers",
-  17: "Heavy snow showers",
-  18: "Light rain",
-  19: "Moderate rain",
-  20: "Heavy rain",
-  21: "Thunder",
-  22: "Light sleet",
-  23: "Moderate sleet",
-  24: "Heavy sleet",
-  25: "Light snowfall",
-  26: "Moderate snowfall",
-  27: "Heavy snowfall"
+    1: "Clear sky",
+    2: "Nearly clear sky",
+    3: "Variable cloudiness",
+    4: "Halfclear sky",
+    5: "Cloudy sky",
+    6: "Overcast",
+    7: "Fog",
+    8: "Light rain showers",
+    9: "Moderate rain showers",
+    10: "Heavy rain showers",
+    11: "Thunderstorm",
+    12: "Light sleet showers",
+    13: "Moderate sleet showers",
+    14: "Heavy sleet showers",
+    15: "Light snow showers",
+    16: "Moderate snow showers",
+    17: "Heavy snow showers",
+    18: "Light rain",
+    19: "Moderate rain",
+    20: "Heavy rain",
+    21: "Thunder",
+    22: "Light sleet",
+    23: "Moderate sleet",
+    24: "Heavy sleet",
+    25: "Light snowfall",
+    26: "Moderate snowfall",
+    27: "Heavy snowfall"
 };
 
 
 let currentWeather: weatherData | null = null
+let forecastWeather: weatherData[] = [];
 
-// const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
-//     try {
-//         const response = yield fetch(weatherURL);
-//         if (!response.ok)
-//             throw new Error(`HTTP error: ${response.status}`);    
-//         const data = yield response.json();
-//         console.log('data', data);
 
- async function fetchWeather(): Promise<void> {
-  try {
+async function fetchWeather(): Promise<void> {
+    try {
         const response = await fetch(weatherURL);
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
 
-         currentWeather = {
+        currentWeather = {
             airTemp: Math.round(data.timeSeries[0].data.air_temperature),
             condition: data.timeSeries[0].data.symbol_code
         }; 
 
-          // a way to get a hold of the actually mening of the weather symbols (found in the docs)
+        forecastWeather = {
+            forecastAirTemp: Math.round(data.timeSeries[23].data.air_temperature),
+            forecastCondition: data.timeSeries[23].data.symbol_code
+        }; 
+
+          // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
         const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
         
         console.log('airTemp', currentWeather.airTemp);
         console.log('condition', currentWeather.condition);
         console.log('actualCondition', actualCondition);
         console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
+        console.log('data', data);
+        console.log('forecast data', data.timeSeries);
+
 
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
@@ -122,18 +114,34 @@ let currentWeather: weatherData | null = null
         }
         displayLocation(places[1].name);
 
-        
-       }
+        const forecastIconContainer = document.querySelector('.forecast');
+        const displayForecastIcon = (array: any) => {
+            forecastIconContainer.innerHTML = '';
+            // loop through the forecastWeather array and display each item
+            array.forEach((item: any) => {
+                forecastContainer.innerHTML += `
+                <div class="forecast-icons">
+                    <img 
+                        src="./weather_icons/aligned/solid/day/${String(item.forecastCondition).padStart(2, '0')}.svg" 
+                        class="weather-icon-forecast"
+                        alt="weather-icon-forecast">
+                </div>
+                `;
+            });
+        };
+        displayForecastIcon(forecastWeather);
+
+        }
         catch (error) {
         console.log(`Error caught, ${error}`);
-        fetchWeather();
 
         console.log(currentWeather);
-        currentWeather();
+        console.log(forecastWeather);
     }
-        // currentWeather = data.timeSeries[0].data  
 };    
 fetchWeather();
 
+// get today's date
 const today = new Date();
 console.log('today', today);
+
