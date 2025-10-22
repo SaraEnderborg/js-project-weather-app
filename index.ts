@@ -23,13 +23,11 @@ const places: any = [
 ];
 const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?`;
 
-console.log(new Date(
-"2025-10-21T14:00:00Z"))
 const weatherSymbols:Record<number, string> = {
   1: "Clear sky",
   2: "Nearly clear sky",
   3: "Variable cloudiness",
-  4: "Halfclear sky",
+  4: "Half clear sky",
   5: "Cloudy sky",
   6: "Overcast",
   7: "Fog",
@@ -67,10 +65,12 @@ async function fetchWeather(): Promise<void> {
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
-console.log("data",data)
+
+          console.log("data",data)
+
          currentWeather = {
             airTemp: Math.round(data.timeSeries[0].data.air_temperature),
-            condition: data.timeSeries[0].data.symbol_code
+            condition: data.timeSeries[0].data.symbol_code, validTime: data.timeSeries[0].validTime
         }; 
 
         // get forecast for 5 days later
@@ -146,6 +146,10 @@ console.log("data",data)
         // display the forecast icons in weekdays in the DOM
         const forecastIconContainer = document.querySelector('.weather-icons');
         const displayForecastIcons = (items:forecastItem[]) => {
+          if (!forecastIconContainer) {
+    console.warn("⚠️ Element '.weather-icons' was not found in the DOM."); 
+    return;
+  }
             forecastIconContainer.innerHTML = '';
             // loop through the forecastWeather array and display each item
             items.forEach((item: any) => {
@@ -163,7 +167,11 @@ console.log("data",data)
 
         // display forecast temperatures in the DOM
         const forecastTempContainer = document.querySelector(".temp");
-        const displayForecastTemps = (items:forecastItem[]) => {
+        const displayForecastTemps = (items:forecastItem[]) => { 
+          if (!forecastTempContainer) {
+    console.warn("⚠️ Element '.temp' was not found in the DOM."); 
+    return;
+  }
             forecastTempContainer.innerHTML = '';
             // loop through the forecastWeather array and display each item
             items.forEach((item: any) => {
