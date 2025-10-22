@@ -1,18 +1,10 @@
-// "use strict";
-// var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-//     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-//     return new (P || (P = Promise))(function (resolve, reject) {
-//         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-//         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-//         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-//         step((generator = generator.apply(thisArg, _arguments || [])).next());
-//     });
-// };
 const places = [
     { name: 'oslo', lat: 59.913245, lon: 59.913245 },
     { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
 ];
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
+// const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
+const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`;
+const hourIndex = 0; // index for current weather data (0 hours ahead)  
 const weatherSymbols = {
     1: "Clear sky",
     2: "Nearly clear sky",
@@ -42,147 +34,49 @@ const weatherSymbols = {
     26: "Moderate snowfall",
     27: "Heavy snowfall"
 };
-let currentWeather;
-const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
+let currentWeather = null;
+let forecastWeather = [];
+async function fetchWeather() {
     try {
-        const response = yield fetch(weatherURL);
+        const response = await fetch(weatherURL);
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
-        const data = yield response.json();
-        console.log('data', data);
-        // currentWeather = data.timeSeries[0].data
+        const data = await response.json();
         currentWeather = {
             airTemp: Math.round(data.timeSeries[0].data.air_temperature),
             condition: data.timeSeries[0].data.symbol_code
         };
-        // a way to get a hold of the actually mening of the weather symbols (found in the docs)
-        const actualCondition = weatherSymbols[currentWeather.condition];
+        // get forecast for 5 days later
+        // e.g. 24, 48, 72, 96, 120 hours later
+        forecastWeather = [24, 48, 72].map((hoursAhead) => {
+            const item = data.timeSeries[hoursAhead];
+            console.log('item', item);
+            return {
+                forecastAirTemp: Math.round(item.data.air_temperature),
+                forecastCondition: item.data.symbol_code,
+                validTime: item.validTime
+            };
+        });
+        // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
+        const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
         console.log('airTemp', currentWeather.airTemp);
         console.log('condition', currentWeather.condition);
         console.log('actualCondition', actualCondition);
         console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
+        console.log('data', data);
+        console.log('forecast data', data.timeSeries);
+        console.log(currentWeather);
+        console.log(forecastWeather);
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
         const displayDegrees = (array) => {
             degreesContainer.innerHTML = '';
             degreesContainer.innerHTML = `
             <h1>${currentWeather.airTemp}</h1>
-            <h2>c</h2>
+            <h2>°c</h2>
             `;
         };
         displayDegrees(currentWeather);
-        // display the weather condition in the DOM
-        const conditionContainer = document.querySelector('.condition');
-        const displayCondition = (condition) => {
-            conditionContainer.innerHTML = '';
-            conditionContainer.innerHTML = `
-            <h3>${actualCondition}</h3>
-            <img 
-              
-                  
-                ""  src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
-                class="weather-icon"
-                alt="weather icon">
-            `;
-        };
-        displayCondition(currentWeather.condition);
-        // display the location in the DOM
-        const locationContainer = document.querySelector('.location');
-        const displayLocation = (place) => {
-            locationContainer.innerHTML = '';
-            locationContainer.innerHTML = `
-            <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
-            `;
-        };
-        displayLocation(places[1].name);
-    }
-    catch (error) {
-        console.log(`caught an error, ${error}`);
-    }
-});
-fetchWeather();
-const today = new Date();
-console.log('today', today);
-export {};
-//# sourceMappingURL=index.js.map
-@Appilistus
-Comment
- 
-Leave a comment
- 
-Footer
-© 2025 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Community
-Docs
-Contact
-Manage cookies
-Do not share my personal information
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-const places = [
-    { name: 'oslo', lat: 59.913245, lon: 59.913245 },
-    { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
-];
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
-const weatherSymbols = {
-    1: 'Clear sky',
-    2: 'Nearly clear sky',
-    3: 'Variable cloudiness',
-    4: 'Halfclear sky',
-    5: 'Cloudy sky',
-    6: 'Overcast',
-    7: 'Fog',
-    8: 'Light rain showers',
-    // …continue with the rest
-};
-
-
-let currentWeather;
-const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const response = yield fetch(weatherURL);
-        if (!response.ok)
-            throw new Error(`HTTP error: ${response.status}`);    
-        const data = yield response.json();
-        console.log('data', data);
-
-        // currentWeather = data.timeSeries[0].data
-        currentWeather = {
-            airTemp: Math.round(data.timeSeries[0].data.air_temperature),
-            condition: data.timeSeries[0].data.symbol_code
-        };
-
-        // a way to get a hold of the acutaly mening of the weather symbols (found in the docs)
-        const actualCondition = weatherSymbols[currentWeather.condition];
-        console.log('airTemp', currentWeather.airTemp);
-        console.log('condition', currentWeather.condition);
-        console.log('actualCondition', actualCondition);
-        console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
-
-        // display the temperature in the DOM
-        const degreesContainer = document.querySelector('.degrees');
-        const displayDegrees = (array) => {
-            degreesContainer.innerHTML = '';
-            degreesContainer.innerHTML = `
-            <h1>${currentWeather.airTemp}</h1>
-            <h2>c</h2>
-            `;
-        };
-        displayDegrees(currentWeather);
-
         // display the weather condition in the DOM
         const conditionContainer = document.querySelector('.condition');
         const displayCondition = (condition) => {
@@ -192,11 +86,10 @@ const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
             <img 
                 src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
                 class="weather-icon"
-                alt="weather icon">
+                alt="weather-icon">
             `;
         };
         displayCondition(currentWeather.condition);
-
         // display the location in the DOM
         const locationContainer = document.querySelector('.location');
         const displayLocation = (place) => {
@@ -204,18 +97,48 @@ const fetchWeather = () => __awaiter(void 0, void 0, void 0, function* () {
             locationContainer.innerHTML = `
             <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
             `;
-        }
+        };
         displayLocation(places[1].name);
-
-    }    
+        // display the forecast icons in weekdays in the DOM
+        const forecastIconContainer = document.querySelector('.weather-icons');
+        const displayForecastIcons = (items) => {
+            forecastIconContainer.innerHTML = '';
+            // loop through the forecastWeather array and display each item
+            items.forEach((item) => {
+                forecastIconContainer.innerHTML += `
+                <div class="forecast-icons">
+                    <img 
+                        src="./weather_icons/aligned/solid/day/${String(item.forecastCondition).padStart(2, '0')}.svg" 
+                        class="weather-icon-forecast"
+                        alt="weather-icon-forecast">
+                </div>
+                `;
+            });
+        };
+        displayForecastIcons(forecastWeather);
+        // display forecast temperatures in the DOM
+        const forecastTempContainer = document.querySelector(".temp");
+        const displayForecastTemps = (items) => {
+            forecastTempContainer.innerHTML = '';
+            // loop through the forecastWeather array and display each item
+            items.forEach((item) => {
+                forecastTempContainer.innerHTML += `
+                <div class="forecast-temps-item">
+                    <p>${item.forecastAirTemp}°c</p>
+                </div>
+                `;
+            });
+        };
+        displayForecastTemps(forecastWeather);
+    }
     catch (error) {
-        console.log(`caught an error, ${error}`);
-    }    
-});    
+        console.log(`Error caught, ${error}`);
+    }
+}
+;
 fetchWeather();
-
+// get today's date
 const today = new Date();
 console.log('today', today);
-
-
-
+export {};
+//# sourceMappingURL=index.js.map
