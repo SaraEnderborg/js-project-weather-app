@@ -2,9 +2,8 @@ const places = [
     { name: 'oslo', lat: 59.913245, lon: 59.913245 },
     { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
 ];
-// const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`;
-const hourIndex = 0; // index for current weather data (0 hours ahead)  
+const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?`;
+console.log(new Date("2025-10-21T14:00:00Z"));
 const weatherSymbols = {
     1: "Clear sky",
     2: "Nearly clear sky",
@@ -42,6 +41,7 @@ async function fetchWeather() {
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
+        console.log("data", data);
         currentWeather = {
             airTemp: Math.round(data.timeSeries[0].data.air_temperature),
             condition: data.timeSeries[0].data.symbol_code
@@ -58,7 +58,7 @@ async function fetchWeather() {
             };
         });
         // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
-        const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
+        const actualCondition = weatherSymbols[Number(currentWeather?.condition)];
         console.log('airTemp', currentWeather.airTemp);
         console.log('condition', currentWeather.condition);
         console.log('actualCondition', actualCondition);
@@ -70,33 +70,39 @@ async function fetchWeather() {
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
         const displayDegrees = (array) => {
-            degreesContainer.innerHTML = '';
-            degreesContainer.innerHTML = `
-            <h1>${currentWeather.airTemp}</h1>
+            if (degreesContainer) {
+                degreesContainer.innerHTML = '';
+                degreesContainer.innerHTML = `
+            <h1>${currentWeather?.airTemp}</h1>
             <h2>°c</h2>
             `;
+            }
         };
         displayDegrees(currentWeather);
         // display the weather condition in the DOM
         const conditionContainer = document.querySelector('.condition');
         const displayCondition = (condition) => {
-            conditionContainer.innerHTML = '';
-            conditionContainer.innerHTML = `
+            if (conditionContainer) {
+                conditionContainer.innerHTML = '';
+                conditionContainer.innerHTML = `
             <h3>${actualCondition}</h3>
             <img 
-                src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
+                src="./weather_icons/aligned/solid/day/${String(currentWeather?.condition).padStart(2, '0')}.svg" 
                 class="weather-icon"
                 alt="weather-icon">
             `;
+            }
         };
         displayCondition(currentWeather.condition);
         // display the location in the DOM
         const locationContainer = document.querySelector('.location');
         const displayLocation = (place) => {
-            locationContainer.innerHTML = '';
-            locationContainer.innerHTML = `
+            if (locationContainer) {
+                locationContainer.innerHTML = '';
+                locationContainer.innerHTML = `
             <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
             `;
+            }
         };
         displayLocation(places[1].name);
         // display the forecast icons in weekdays in the DOM
