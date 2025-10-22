@@ -24,12 +24,12 @@ const places: any = [
         lat: 59.329468, 
         lon: 18.062639,
         url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`
-    }
+    },
     { 
         name: 'gotland', 
         lat: 57.499998,  
         lon: 18.549997,
-        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.5499978/lat/57.49999/data.json`
+        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.549997/lat/57.49999/data.json`
     },
     { 
         name: 'umeå', 
@@ -83,7 +83,6 @@ const weatherSymbols = {
 let currentWeather: weatherData | null = null
 let forecastWeather: forecastItem[] = [];
 
-
 async function fetchWeather(): Promise<void> {
     try {
         const response = await fetch(weatherURL);
@@ -98,7 +97,7 @@ async function fetchWeather(): Promise<void> {
 
         // get forecast for 5 days later
         // e.g. 24, 48, 72, 96, 120 hours later
-        forecastWeather = [24, 48, 72].map((hoursAhead) => {
+        forecastWeather = [24, 48, 69].map((hoursAhead) => {
             const item = data.timeSeries[hoursAhead];
             console.log('item', item);
 
@@ -115,7 +114,7 @@ async function fetchWeather(): Promise<void> {
         console.log('airTemp', currentWeather.airTemp);
         console.log('condition', currentWeather.condition);
         console.log('actualCondition', actualCondition);
-        console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
+        console.log(`location: ${places[0].name}, lat: ${places[0].lat}, lon: ${places[0].lon}`);
         console.log('data', data);
         console.log('forecast data', data.timeSeries);
         console.log(currentWeather);
@@ -124,7 +123,8 @@ async function fetchWeather(): Promise<void> {
 
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
-        const displayDegrees = (array: any) => {
+        const displayDegrees = (data: weatherData) => {
+        // const displayDegrees = (array: any) => {
             degreesContainer.innerHTML = '';
             degreesContainer.innerHTML = `
             <h1>${currentWeather.airTemp}</h1>
@@ -156,6 +156,26 @@ async function fetchWeather(): Promise<void> {
             `;
         }
         displayLocation(places[0].name);
+
+        // display the time in the DOM
+        const timeContainer = document.querySelector('.time');
+        const displayTime = () => {
+            const now = new Date();
+            const options: Intl.DateTimeFormatOptions = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const formattedTime = now.toLocaleDateString('en-US', options);
+            timeContainer.innerHTML = '';
+            timeContainer.innerHTML = `
+            <p>${formattedTime}</p>
+            `;
+        }
+        displayTime();
 
         // display the forecast icons in weekdays in the DOM
         const forecastIconContainer = document.querySelector('.weather-icons');
@@ -231,15 +251,28 @@ displayStockholmWeather();
 // display gotland weather
 async function displayGotlandWeather() {
     try {
-        const response = await fetch(places[0].url);
+        const response = await fetch(places[1].url);
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
 
         const gotlandWeather = {
-            airTemp: Math.round(data.timeSeries[hourIndex].data.air_temperature),
-            condition: data.timeSeries[hourIndex].data.symbol_code
-        };
+            airTemp: Math.round(data.timeSeries[0].data.air_temperature),
+            condition: data.timeSeries[0].data.symbol_code
+        }; 
+
+        // print gotland forecast to console
+        const forecastGotland = [24, 48, 69].map((hoursAhead) => {
+            const item = data.timeSeries[hoursAhead];
+            console.log('gotland item', item);
+
+            return {
+                forecastAirTemp: Math.round(item.data.air_temperature),
+                forecastCondition: item.data.symbol_code,
+                // validTime: item.validTime
+            };
+        });
+        console.log('forecastGotland', forecastGotland);
 
         console.log(`Gotland weather: ${gotlandWeather.airTemp}°C, Condition: ${gotlandWeather.condition}`);
     } catch (error) {
@@ -284,11 +317,10 @@ async function displayUppsalaWeather() {
             condition: data.timeSeries[hourIndex].data.symbol_code
         };
 
-        console.log(`Uppsala weather: ${uppsalaWeather.airTemp}°C, Condition: ${uppsalaWeather.condition}`);
+        console.log(`Uppsala weather: ${uppsalaWeather.airTemp}°C, Condition: ${uppsalaWeather.condition}`)
+
     } catch (error) {
-        console.log(`Error caught, ${error}`);
+        console.log(`Error caught, ${error}`)
     }
 }
 displayUppsalaWeather();
-
-
