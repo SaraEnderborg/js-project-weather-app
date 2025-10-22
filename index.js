@@ -2,8 +2,7 @@ const places = [
     { name: 'oslo', lat: 59.913245, lon: 59.913245 },
     { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
 ];
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?`;
-console.log(new Date("2025-10-21T14:00:00Z"));
+const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
 const weatherSymbols = {
     1: "Clear sky",
     2: "Nearly clear sky",
@@ -41,73 +40,57 @@ async function fetchWeather() {
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
-        console.log("data", data);
         currentWeather = {
             airTemp: Math.round(data.timeSeries[0].data.air_temperature),
             condition: data.timeSeries[0].data.symbol_code
         };
-        // get forecast for 5 days later
-        // e.g. 24, 48, 72, 96, 120 hours later
-        forecastWeather = [24, 48, 72].map((hoursAhead) => {
-            const item = data.timeSeries[hoursAhead];
-            console.log('item', item);
-            return {
-                forecastAirTemp: Math.round(item.data.air_temperature),
-                forecastCondition: item.data.symbol_code,
-                validTime: item.validTime
-            };
-        });
+        forecastWeather = [{
+                forecastAirTemp: Math.round(data.timeSeries[23].data.air_temperature),
+                forecastCondition: data.timeSeries[23].data.symbol_code
+            }];
         // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
-        const actualCondition = weatherSymbols[Number(currentWeather?.condition)];
+        const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
         console.log('airTemp', currentWeather.airTemp);
         console.log('condition', currentWeather.condition);
         console.log('actualCondition', actualCondition);
         console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
         console.log('data', data);
         console.log('forecast data', data.timeSeries);
-        console.log(currentWeather);
-        console.log(forecastWeather);
         // display the temperature in the DOM
         const degreesContainer = document.querySelector('.degrees');
         const displayDegrees = (array) => {
-            if (degreesContainer) {
-                degreesContainer.innerHTML = '';
-                degreesContainer.innerHTML = `
-            <h1>${currentWeather?.airTemp}</h1>
+            degreesContainer.innerHTML = '';
+            degreesContainer.innerHTML = `
+            <h1>${currentWeather.airTemp}</h1>
             <h2>°c</h2>
             `;
-            }
         };
         displayDegrees(currentWeather);
         // display the weather condition in the DOM
         const conditionContainer = document.querySelector('.condition');
         const displayCondition = (condition) => {
-            if (conditionContainer) {
-                conditionContainer.innerHTML = '';
-                conditionContainer.innerHTML = `
+            conditionContainer.innerHTML = '';
+            conditionContainer.innerHTML = `
             <h3>${actualCondition}</h3>
             <img 
-                src="./weather_icons/aligned/solid/day/${String(currentWeather?.condition).padStart(2, '0')}.svg" 
+                src="./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, '0')}.svg" 
                 class="weather-icon"
                 alt="weather-icon">
             `;
-            }
         };
         displayCondition(currentWeather.condition);
         // display the location in the DOM
         const locationContainer = document.querySelector('.location');
         const displayLocation = (place) => {
-            if (locationContainer) {
-                locationContainer.innerHTML = '';
-                locationContainer.innerHTML = `
+            locationContainer.innerHTML = '';
+            locationContainer.innerHTML = `
             <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
             `;
-            }
         };
         displayLocation(places[1].name);
-        // display the forecast icons in weekdays in the DOM
-        const forecastIconContainer = document.querySelector('.weather-icons');
-        const displayForecastIcons = (items) => {
+        // display the forecast icons in the DOM
+        const forecastIconContainer = document.querySelector('.forecast');
+        const displayForecastIcon = (items) => {
             forecastIconContainer.innerHTML = '';
             // loop through the forecastWeather array and display each item
             items.forEach((item) => {
@@ -121,24 +104,12 @@ async function fetchWeather() {
                 `;
             });
         };
-        displayForecastIcons(forecastWeather);
-        // display forecast temperatures in the DOM
-        const forecastTempContainer = document.querySelector(".temp");
-        const displayForecastTemps = (items) => {
-            forecastTempContainer.innerHTML = '';
-            // loop through the forecastWeather array and display each item
-            items.forEach((item) => {
-                forecastTempContainer.innerHTML += `
-                <div class="forecast-temps-item">
-                    <p>${item.forecastAirTemp}°c</p>
-                </div>
-                `;
-            });
-        };
-        displayForecastTemps(forecastWeather);
+        displayForecastIcon(forecastWeather);
     }
     catch (error) {
         console.log(`Error caught, ${error}`);
+        console.log(currentWeather);
+        console.log(forecastWeather);
     }
 }
 ;
