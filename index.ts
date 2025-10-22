@@ -24,8 +24,10 @@ const places: any = [
     { name: 'oslo', lat: 59.913245, lon: 59.913245 },
     { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
 ];
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
+const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?`;
 
+console.log(new Date(
+"2025-10-21T14:00:00Z"))
 const weatherSymbols:Record<number, string> = {
   1: "Clear sky",
   2: "Nearly clear sky",
@@ -74,11 +76,12 @@ let currentWeather: weatherData | null = null
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
-
+console.log("data",data)
          currentWeather = {
             airTemp: Math.round(data.timeSeries[0].data.air_temperature),
             condition: data.timeSeries[0].data.symbol_code
         }; 
+
 
           // a way to get a hold of the actually mening of the weather symbols (found in the docs)
         const actualCondition = weatherSymbols[Number(currentWeather.condition)]
