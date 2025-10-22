@@ -2,24 +2,52 @@
 type place = {
     name: string,
     lat: number,
-    lon: number
+    lon: number,
+    url: string
 }
 
 type weatherData = {
     airTemp: number,
-    condition: string
+    condition: string,
+    validTime: string
 }
 
 type forecastItem = {
     forecastAirTemp: number,
-    forecastCondition: string
+    forecastCondition: string,
+    validTime: string
 }
 
 const places: any = [
-    { name: 'oslo', lat: 59.913245, lon: 59.913245 },
-    { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
-];
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
+    { 
+        name: 'stockholm', 
+        lat: 59.329468, 
+        lon: 18.062639,
+        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`
+    }
+    { 
+        name: 'gotland', 
+        lat: 57.499998,  
+        lon: 18.549997,
+        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.5499978/lat/57.49999/data.json`
+    },
+    { 
+        name: 'umeå', 
+        lat: 63.825848, 
+        lon: 20.263035,
+        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/20.263035/lat/63.825848/data.json`
+    },
+    { 
+        name: 'uppsala', 
+        lat: 59.856701,
+        lon: 17.642139,
+        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/17.642139/lat/59.856701/data.json`
+    }]
+;
+// const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
+const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`;
+
+const hourIndex = 0; // index for current weather data (0 hours ahead)  
 
 const weatherSymbols = {
     1: "Clear sky",
@@ -68,10 +96,18 @@ async function fetchWeather(): Promise<void> {
             condition: data.timeSeries[0].data.symbol_code
         }; 
 
-        forecastWeather = [{
-            forecastAirTemp: Math.round(data.timeSeries[23].data.air_temperature),
-            forecastCondition: data.timeSeries[23].data.symbol_code
-        }]; 
+        // get forecast for 5 days later
+        // e.g. 24, 48, 72, 96, 120 hours later
+        forecastWeather = [24, 48, 72].map((hoursAhead) => {
+            const item = data.timeSeries[hoursAhead];
+            console.log('item', item);
+
+            return {
+                forecastAirTemp: Math.round(item.data.air_temperature),
+                forecastCondition: item.data.symbol_code,
+                validTime: item.validTime
+            };
+        });
 
           // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
         const actualCondition = weatherSymbols[Number(currentWeather.condition)] || 'Unknown';
@@ -82,6 +118,8 @@ async function fetchWeather(): Promise<void> {
         console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
         console.log('data', data);
         console.log('forecast data', data.timeSeries);
+        console.log(currentWeather);
+        console.log(forecastWeather);
 
 
         // display the temperature in the DOM
@@ -114,14 +152,14 @@ async function fetchWeather(): Promise<void> {
         const displayLocation = (place: any) => {
             locationContainer.innerHTML = '';
             locationContainer.innerHTML = `
-            <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
+            <h2>${places[0].name.charAt(0).toUpperCase() + places[0].name.slice(1)}</h2>
             `;
         }
-        displayLocation(places[1].name);
+        displayLocation(places[0].name);
 
-        // display the forecast icons in the DOM
-        const forecastIconContainer = document.querySelector('.forecast');
-        const displayForecastIcon = (items:forecastItem[]) => {
+        // display the forecast icons in weekdays in the DOM
+        const forecastIconContainer = document.querySelector('.weather-icons');
+        const displayForecastIcons = (items:forecastItem[]) => {
             forecastIconContainer.innerHTML = '';
             // loop through the forecastWeather array and display each item
             items.forEach((item: any) => {
@@ -135,19 +173,122 @@ async function fetchWeather(): Promise<void> {
                 `;
             });
         };
-        displayForecastIcon(forecastWeather);
+        displayForecastIcons(forecastWeather);
+
+        // display forecast temperatures in the DOM
+        const forecastTempContainer = document.querySelector(".temp");
+        const displayForecastTemps = (items:forecastItem[]) => {
+            forecastTempContainer.innerHTML = '';
+            // loop through the forecastWeather array and display each item
+            items.forEach((item: any) => {
+                forecastTempContainer.innerHTML += `
+                <div class="forecast-temps-item">
+                    <p>${item.forecastAirTemp}°c</p>
+                </div>
+                `;
+            }); 
+        };
+        displayForecastTemps(forecastWeather);
 
         }
         catch (error) {
         console.log(`Error caught, ${error}`);
-
-        console.log(currentWeather);
-        console.log(forecastWeather);
-    }
+        }
 };    
 fetchWeather();
 
 // get today's date
 const today = new Date();
 console.log('today', today);
+
+
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
+// display stockholm weather
+async function displayStockholmWeather() {
+    try {
+        const response = await fetch(places[0].url);
+        if (!response.ok)
+            throw new Error(`HTTP error: ${response.status}`);
+        const data = await response.json();
+
+        const stockholmWeather = {
+            airTemp: Math.round(data.timeSeries[hourIndex].data.air_temperature),
+            condition: data.timeSeries[hourIndex].data.symbol_code
+        };
+
+        console.log(`Stockholm weather: ${stockholmWeather.airTemp}°C, Condition: ${stockholmWeather.condition}`);
+    } catch (error) {
+        console.log(`Error caught, ${error}`);
+    }
+}
+displayStockholmWeather();
+
+
+// display gotland weather
+async function displayGotlandWeather() {
+    try {
+        const response = await fetch(places[0].url);
+        if (!response.ok)
+            throw new Error(`HTTP error: ${response.status}`);
+        const data = await response.json();
+
+        const gotlandWeather = {
+            airTemp: Math.round(data.timeSeries[hourIndex].data.air_temperature),
+            condition: data.timeSeries[hourIndex].data.symbol_code
+        };
+
+        console.log(`Gotland weather: ${gotlandWeather.airTemp}°C, Condition: ${gotlandWeather.condition}`);
+    } catch (error) {
+        console.log(`Error caught, ${error}`);
+    }
+}
+displayGotlandWeather();
+
+
+// display umeå weather
+async function displayUmeaWeather() {
+    try {
+        const response = await fetch(places[2].url);
+        if (!response.ok)
+            throw new Error(`HTTP error: ${response.status}`);
+        const data = await response.json();
+
+        const umeaWeather = {
+            airTemp: Math.round(data.timeSeries[hourIndex].data.air_temperature),
+            condition: data.timeSeries[hourIndex].data.symbol_code
+        };
+
+        console.log(`Umeå weather: ${umeaWeather.airTemp}°C, Condition: ${umeaWeather.condition}`);
+    } catch (error) {
+        console.log(`Error caught, ${error}`);
+    }
+}
+displayUmeaWeather();
+
+
+
+// display uppsala weather
+async function displayUppsalaWeather() {
+    try {
+        const response = await fetch(places[3].url);
+        if (!response.ok)
+            throw new Error(`HTTP error: ${response.status}`);
+        const data = await response.json();
+
+        const uppsalaWeather = {
+            airTemp: Math.round(data.timeSeries[hourIndex].data.air_temperature),
+            condition: data.timeSeries[hourIndex].data.symbol_code
+        };
+
+        console.log(`Uppsala weather: ${uppsalaWeather.airTemp}°C, Condition: ${uppsalaWeather.condition}`);
+    } catch (error) {
+        console.log(`Error caught, ${error}`);
+    }
+}
+displayUppsalaWeather();
+
 
