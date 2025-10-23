@@ -13,7 +13,7 @@ body {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-around;
-  background: linear-gradient(180deg, #a0a0a0 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #dcdcdc 0%, #ffffff 100%);
   color: #fff;
 }
 
