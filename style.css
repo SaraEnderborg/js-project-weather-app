@@ -32,24 +32,29 @@ body {
 /* === HEADER (top gradient area) === */
 .header {
   position: relative;
-  height: 320px;
-  background: linear-gradient(180deg, #9aa8ff 0%, #c6c9ff 100%);
-  border-bottom-left-radius: 100px;
-  border-bottom-right-radius: 100px;
-  text-align: center;
-  padding: 40px 20px;
+  width: 414px;
+  height: 896px;
+  padding: 30px;
+  margin: 60px;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* === TEMPERATURE === */
-.temperature {
-  font-size: 80px;
-  font-weight: 300;
-  margin-top: 10px;
+/* style for upper part */
+svg {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
-.temperature span {
-  font-size: 28px;
-  vertical-align: super;
+path {
+  position: absolute;
+  width: 414px;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
 /* === WEATHER ICON === */
@@ -79,22 +84,26 @@ body {
   justify-content: space-around;
   font-size: 16px;
   margin-top: 20px;
-  opacity: 0.9;
+  opacity: 95%;
+  font-size: 22px;
 }
 
-/* === NEXT CITY BUTTON === */
+/* button style */
 #toggle-button {
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70px;
-  height: 70px;
-  background-color: #6a6dff;
+  position: relative;
+  align-self: flex-end;
+  right: 10px;
+  width: 104px;
+  height: 104px;
+  margin-top: 10px;
+  background-color: #ffffff00;
   border: none;
-  border-radius: 50%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  border-radius: 50px;
   cursor: pointer;
+  z-index: 200;
+}
+
+.week {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,10 +120,9 @@ body {
   stroke: #fff;
 }
 
-/* === FORECAST SECTION === */
-.forecast {
-  margin-top: 60px;
-  color: #333;
+.weekday,
+.weather-icon,
+.temp {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -131,39 +139,8 @@ body {
   transition: background 0.3s;
 }
 
-.day:hover {
-  background: rgba(105, 108, 255, 0.08);
+.weather-icon {
+  width: 36px;
+  height: 36px;
+  justify-self: center;
 }
-
-.day-name {
-  font-weight: 500;
-  color: #333;
-}
-
-.day-temp {
-  font-weight: 400;
-  color: #666;
-  font-size: 15px;
-}
-
-.day-icon {
-  width: 28px;
-  height: 28px;
-}
-
-/* === SMOOTH TRANSITIONS === */
-.fade {
-  animation: fadeIn 0.6s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
