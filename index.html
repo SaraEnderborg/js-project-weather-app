@@ -1,125 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>weather-app</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <link rel="stylesheet" href="style.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
 </head>
+
 <body>
-    <section class="card">
-        <!-- background pic for upper part -->
-        <svg 
-            width="414" 
-            height="458" 
-            viewBox="0 0 414 458" 
-            xmlns="http://www.w3.org/2000/svg"
-            >
-            <defs>
-                <pattern 
-                    id="imagePattern" 
-                    patternUnits="userSpaceOnUse" 
-                    width="414" 
-                    height="458"
-                >
-                <image 
-                    href="/image.png" 
-                    width="414" 
-                    height="458" 
-                    preserveAspectRatio="xMidYMid slice"
-                />
-                </pattern>
-            </defs>
-            <path
-                d="M207 -178C440.064 -178 629 -35.6265 629 140C629 315.627 440.064 458 207 458C-26.0641 458 -215 315.627 -215 140C-215 -35.6265 -26.0641 -178 207 -178Z"
-                fill="url(#imagePattern)"
-            />
+  <!-- Main weather card -->
+  <section class="card fade">
+    <!-- === HEADER SECTION (top part with gradient) === -->
+    <div class="header">
+      <h1 class="temperature">--<span>°C</span></h1>
+
+      <!-- Main weather icon -->
+      <img
+        src="./weather_icons/aligned/solid/day/01.svg"
+        alt="weather icon"
+        class="weather-icon"
+      />
+
+      <!-- Location name -->
+      <h2 class="location">Loading...</h2>
+
+      <!-- Current condition -->
+      <h3 class="condition">Please wait</h3>
+
+      <!-- Sunrise & sunset -->
+      <div class="sun-info">
+        <p>sunrise: --:--</p>
+        <p>sunset: --:--</p>
+      </div>
+
+      <!-- Next city button -->
+      <button id="toggle-button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="white"
+          stroke-width="2"
+        >
+          <path d="M9 5l7 7-7 7" />
         </svg>
+      </button>
+    </div>
 
-        <div class="summary">
-            <div class="degrees">
-            </div>
-            <div class="location">
-                <!-- <h2>Stockholm</h2> -->
-            </div>
-            <div class="condition">
-                <!-- <h3>Clear</h3>
-                <img 
-                    src="./weather_icons/aligned/solid/day/01.svg" 
-                    class="weather-icon"
-                    alt="weather icon"> -->
-            </div>
-        </div>
-        <div class="sun">
-            <p>sunrise:</p>
-            <p>22:30</p>
-            <p>sunset:</p>
-            <p>00:00</p>
-        </div>
+    <!-- === FORECAST SECTION === -->
+    <div class="forecast">
+      <!-- Example placeholder (these will be replaced dynamically from TS) -->
+      <div class="day">
+        <p class="day-name">Mon</p>
+        <img
+          src="./weather_icons/aligned/solid/day/01.svg"
+          class="day-icon"
+          alt="icon"
+        />
+        <p class="day-temp">--° / --°C</p>
+      </div>
 
-        <!-- toggle button -->
-        <button
-            id="toggle-button"
-            type="button">
-                <svg width="118" height="118" viewBox="0 0 118 118" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g filter="url(#filter0_d_1067_294)">
-                    <circle cx="58.5682" cy="54.5682" r="50.5682" fill="#757AFF" />
-                </g>
-                <path d="M53.9855 42.9114L67.8179 56.7439L53.9855 70.5763" stroke="white" stroke-width="4" stroke-linecap="round" />
-                <defs>
-                    <filter id="filter0_d_1067_294" x="0" y="0" width="117.136" height="117.136" filterUnits="userSpaceOnUse"
-                        color-interpolation-filters="sRGB">
-                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                            result="hardAlpha" />
-                        <feOffset dy="4" />
-                        <feGaussianBlur stdDeviation="4" />
-                        <feComposite in2="hardAlpha" operator="out" />
-                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.34902 0" />
-                        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1067_294" />
-                        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1067_294" result="shape" />
-                    </filter>
-                </defs>
-            </svg>
-            <!-- <img class="toggleBtn" src="./image_360.png" alt="toggle button"> -->
-        </button>
+      <div class="day">
+        <p class="day-name">Tue</p>
+        <img
+          src="./weather_icons/aligned/solid/day/02.svg"
+          class="day-icon"
+          alt="icon"
+        />
+        <p class="day-temp">--° / --°C</p>
+      </div>
 
-        <!-- lower section -->
-        <section class="week">
-            <div class="weekday">
-                <p>Mon</p>
-                <p>Tue</p>
-                <p>Wed</p>
-                <p>Thu</p>
-                <p>Fri</p>
-            </div>
-            <div class="weather-icons">
-                <!-- <img 
-                src="./weather_icons/aligned/solid/day/01.svg" 
-                class="weather-icon"
-                alt="weather icon">
-                <img 
-                src="./weather_icons/aligned/solid/day/01.svg" 
-                class="weather-icon"
-                alt="weather icon">
-                <img 
-                src="./weather_icons/aligned/solid/day/01.svg" 
-                class="weather-icon"
-                alt="weather icon"> -->
-            </div>
-            <!-- <div class="forecast-temps"></div> -->
-            <div class="temp">
-                <!-- <p>26°c</p>
-                <p>26°c</p>
-                <p>26°c</p>
-                <p>26°c</p>
-                <p>26°c</p> -->
-            </div>
-    </section>
-    <script type="module" src="index.js"></script>
+      <div class="day">
+        <p class="day-name">Wed</p>
+        <img
+          src="./weather_icons/aligned/solid/day/03.svg"
+          class="day-icon"
+          alt="icon"
+        />
+        <p class="day-temp">--° / --°C</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">Thu</p>
+        <img
+          src="./weather_icons/aligned/solid/day/04.svg"
+          class="day-icon"
+          alt="icon"
+        />
+        <p class="day-temp">--° / --°C</p>
+      </div>
+
+      <div class="day">
+        <p class="day-name">Fri</p>
+        <img
+          src="./weather_icons/aligned/solid/day/05.svg"
+          class="day-icon"
+          alt="icon"
+        />
+        <p class="day-temp">--° / --°C</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script -->
+  <script type="module" src="index.js"></script>
 </body>
 </html>
+

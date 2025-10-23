@@ -1,122 +1,169 @@
+/* === GLOBAL RESET === */
 * {
-  font-family: "Roboto";
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 
+/* === BODY LAYOUT === */
 body {
   display: flex;
-  align-items: center;
   justify-content: center;
-  color: white;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #cfd1ff 0%, #ffffff 100%);
+  color: #fff;
 }
 
-h1 {
-  font-size: 120px;
-}
-
-h2 {
-  font-size: 34px;
-  margin-top: 12px;
-}
-
-h3 {
-  font-size: 22px;
-  opacity: 95%;
-}
-
-/* style for the whole card */
+/* === MAIN CARD === */
 .card {
+  position: relative;
+  width: 360px;
+  height: 720px;
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
+}
+
+/* === HEADER (top gradient area) === */
+.header {
   position: relative;
-  width: 414px;
-  height: 896px;
-  padding: 30px;
-  margin: 60px;
-  box-sizing: border-box;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1) ;
+  height: 320px;
+  background: linear-gradient(180deg, #9aa8ff 0%, #c6c9ff 100%);
+  border-bottom-left-radius: 100px;
+  border-bottom-right-radius: 100px;
+  text-align: center;
+  padding: 40px 20px;
 }
 
-/* style for upper part */
-svg {
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 0;
-}
-
-path {
-    position: absolute;
-    width: 414px;
-    top: 0;
-    left: 0;
-    z-index: 0;
-}
-
-.summary {
-  padding-top: 80px;
-  z-index: 100;
-  position: relative;
-}
-
-.degrees {
-  display: flex;
-  flex-direction: row;
-  align-items: cent;
-}
-
-.condition {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 10px;
+/* === TEMPERATURE === */
+.temperature {
+  font-size: 80px;
+  font-weight: 300;
   margin-top: 10px;
 }
 
-.sun {
+.temperature span {
+  font-size: 28px;
+  vertical-align: super;
+}
+
+/* === WEATHER ICON === */
+.weather-icon {
+  width: 90px;
+  height: 90px;
+  margin: 15px auto;
+  display: block;
+}
+
+/* === LOCATION & CONDITION === */
+.location {
+  font-size: 24px;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+.condition {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+/* === SUN INFO (sunrise / sunset) === */
+.sun-info {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
+  font-size: 16px;
   margin-top: 20px;
-  opacity: 95%;
-  font-size: 22px;
+  opacity: 0.9;
 }
 
-/* button style */
- #toggle-button {
-    position: relative;
-    align-self: flex-end;
-    right: 10px;
-    width: 104px;
-    height: 104px;
-    margin-top: 10px;
-    background-color: #ffffff00;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    z-index: 200;
-} 
-
-.week {
+/* === NEXT CITY BUTTON === */
+#toggle-button {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 70px;
+  background-color: #6a6dff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  color: black;
-  margin-top: auto;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
 }
 
-.weekday, .weather-icon, .temp {
+#toggle-button:hover {
+  transform: translateX(-50%) scale(1.1);
+}
+
+#toggle-button svg {
+  width: 28px;
+  height: 28px;
+  stroke: #fff;
+}
+
+/* === FORECAST SECTION === */
+.forecast {
+  margin-top: 60px;
+  color: #333;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  font-size: 20px;
-  margin-top: 20px;
+  gap: 10px;
+  padding: 0 20px;
 }
 
-.weather-icon {
-  width: 36px;
-  height: 36px;
-  justify-self: center;
+/* Each day line */
+.day {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: background 0.3s;
 }
+
+.day:hover {
+  background: rgba(105, 108, 255, 0.08);
+}
+
+.day-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.day-temp {
+  font-weight: 400;
+  color: #666;
+  font-size: 15px;
+}
+
+.day-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* === SMOOTH TRANSITIONS === */
+.fade {
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

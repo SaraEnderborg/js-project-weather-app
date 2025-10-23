@@ -1,29 +1,33 @@
-
-type place = {
-    name: string,
-    lat: number,
-    lon: number
+// === Type definitions ===
+type Place = {
+  name: string;
+  lat: number;
+  lon: number;
 }
 
-type weatherData = {
-    airTemp: number,
-    condition: string,
-    validTime: string
+type WeatherData = {
+  airTemp: number;
+  condition: number;
+  validTime: string;
 }
 
-type forecastItem = {
-    forecastAirTemp: number,
-    forecastCondition: string,
-    validTime: string
+type DailyForecast = {
+  date: string;
+  minTemp: number;
+  maxTemp: number;
+  condition: number;
 }
 
-const places: any = [
-    { name: 'oslo', lat: 59.913245, lon: 59.913245 },
-    { name: 'stockholm', lat: 59.329468, lon: 18.062639 }
-];
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?`;
+// === List of cities ===
+const places: Place[] = [
+  { name: "Stockholm", lat: 59.329468, lon: 18.062639 },
+  { name: "Uppsala", lat: 59.8586, lon: 17.6389 },
+  { name: "Gotland", lat: 57.636, lon: 18.294 },
+  { name: "Umeå", lat: 63.8258, lon: 20.263 },
+]
 
-const weatherSymbols:Record<number, string> = {
+// === SMHI weather symbol meanings ===
+const weatherSymbols: Record<number, string> = {
   1: "Clear sky",
   2: "Nearly clear sky",
   3: "Variable cloudiness",
@@ -50,148 +54,126 @@ const weatherSymbols:Record<number, string> = {
   24: "Heavy sleet",
   25: "Light snowfall",
   26: "Moderate snowfall",
-  27: "Heavy snowfall"
-};
+  27: "Heavy snowfall",
+}
 
+// === Track the current city being displayed ===
+let currentIndex = 0
 
+// === Fetch weather data for a specific city ===
+async function fetchWeather(place: Place): Promise<void> {
+  const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${place.lon}/lat/${place.lat}/data.json`
 
-let currentWeather: weatherData | null = null
-let forecastWeather: forecastItem[] = [];
+  try {
+    // Fetch data from SMHI API
+    const response = await fetch(weatherURL)
+    if (!response.ok) throw new Error(`HTTP error: ${response.status}`)
+    const data = await response.json()
 
+    // === Extract current weather data ===
+    const airTempParam = data.timeSeries[0].parameters.find((p: any) => p.name === "t")
+    const symbolParam = data.timeSeries[0].parameters.find((p: any) => p.name === "Wsymb2")
 
-async function fetchWeather(): Promise<void> {
-    try {
-        const response = await fetch(weatherURL);
-        if (!response.ok)
-            throw new Error(`HTTP error: ${response.status}`);
-        const data = await response.json();
+    const currentWeather: WeatherData = {
+      airTemp: Math.round(airTempParam.values[0]),
+      condition: symbolParam.values[0],
+      validTime: data.timeSeries[0].validTime,
+    }
 
-          console.log("data",data)
+    // Get readable condition name (ex: "Light rain")
+    const actualCondition = weatherSymbols[currentWeather.condition] || "N/A"
 
-         currentWeather = {
-            airTemp: Math.round(data.timeSeries[0].data.air_temperature),
-            condition: data.timeSeries[0].data.symbol_code, validTime: data.timeSeries[0].validTime
-        }; 
+    // === Group forecast data by day ===
+    const groupedByDate: Record<string, { temps: number[]; symbol: number }> = {}
+    data.timeSeries.forEach((entry: any) => {
+      const vt = entry.validTime as string;
+      if (!vt) return
+      const dateKey = vt.slice(0, 10); // Only keep YYYY-MM-DD
 
-        // get forecast for 5 days later
-        // e.g. 24, 48, 72, 96, 120 hours later
-        forecastWeather = [24, 48, 72].map((hoursAhead) => {
-            const item = data.timeSeries[hoursAhead];
-            console.log('item', item);
+      const t = entry.parameters.find((p: any) => p.name === "t")?.values?.[0];
+      const sym = entry.parameters.find((p: any) => p.name === "Wsymb2")?.values?.[0];
+      if (t === undefined || sym === undefined) return
 
-            return {
-                forecastAirTemp: Math.round(item.data.air_temperature),
-                forecastCondition: item.data.symbol_code,
-                validTime: item.validTime
-            };
-        });
+      // Initialize the day if missing, then push temp
+      (groupedByDate[dateKey] ??= { temps: [], symbol: sym }).temps.push(t)
+    })
 
-          // a way to get a hold of the actually meaning of the weather symbols (found in the docs)
-        const actualCondition = weatherSymbols[Number(currentWeather?.condition)];
-        
-        console.log('airTemp', currentWeather.airTemp);
-        console.log('condition', currentWeather.condition);
-        console.log('actualCondition', actualCondition);
-        console.log(`location: ${places[1].name}, lat: ${places[1].lat}, lon: ${places[1].lon}`);
-        console.log('data', data);
-        console.log('forecast data', data.timeSeries);
-        console.log(currentWeather);
-        console.log(forecastWeather);
+    // === Create a simplified daily forecast array ===
+    const dailyForecast: DailyForecast[] = Object.entries(groupedByDate)
+      .map(([date, info]) => ({
+        date,
+        minTemp: Math.round(Math.min(...info.temps)),
+        maxTemp: Math.round(Math.max(...info.temps)),
+        condition: info.symbol,
+      }))
+      .slice(0, 5); // Only keep next 5 days
 
+    // === Update the DOM to match the new layout ===
+    const card = document.querySelector(".card");
+    if (!card) return
 
-        // display the temperature in the DOM
-        const degreesContainer = document.querySelector('.degrees');
-        const displayDegrees = (array: any) => {
-          if (degreesContainer) {
-            degreesContainer.innerHTML = '';
-            degreesContainer.innerHTML = `
-            <h1>${currentWeather?.airTemp}</h1>
-            <h2>°c</h2>
-            `;
-         }
-        };
-        displayDegrees(currentWeather);
+    // === Update the main weather section ===
+    const temperatureEl = card.querySelector(".temperature");
+    const locationEl = card.querySelector(".location");
+    const conditionEl = card.querySelector(".condition");
+    const iconEl = card.querySelector(".weather-icon") as HTMLImageElement;
+    const sunriseEl = card.querySelector(".sun-info p:first-child");
+    const sunsetEl = card.querySelector(".sun-info p:last-child");
 
-        // display the weather condition in the DOM
-        const conditionContainer = document.querySelector('.condition');
-        const displayCondition = (condition: any) => {
+    // Fill in live weather data
+    if (temperatureEl) temperatureEl.innerHTML = `${currentWeather.airTemp}<span>°C</span>`;
+    if (locationEl) locationEl.textContent = place.name;
+    if (conditionEl) conditionEl.textContent = actualCondition;
+    if (iconEl)
+      iconEl.src = `./weather_icons/aligned/solid/day/${String(
+        currentWeather.condition
+      ).padStart(2, "0")}.svg`
 
-          if (conditionContainer) {
-            conditionContainer.innerHTML = '';
-            conditionContainer.innerHTML = `
-            <h3>${actualCondition}</h3>
-            <img 
-                src="./weather_icons/aligned/solid/day/${String(currentWeather?.condition).padStart(2, '0')}.svg" 
-                class="weather-icon"
-                alt="weather-icon">
-            `;
-          }
-            
-        };
-        displayCondition(currentWeather.condition);
+    // Placeholder sunrise/sunset (can be replaced with real API later)
+    if (sunriseEl) sunriseEl.textContent = "sunrise: 07:32";
+    if (sunsetEl) sunsetEl.textContent = "sunset: 17:56";
 
-        // display the location in the DOM
-        const locationContainer = document.querySelector('.location');
-        const displayLocation = (place: any) => {
-          if (locationContainer) {
-              locationContainer.innerHTML = '';
-            locationContainer.innerHTML = `
-            <h2>${places[1].name.charAt(0).toUpperCase() + places[1].name.slice(1)}</h2>
-            `;
-          }
-          
-        }
-        displayLocation(places[1].name);
+    // === Update the 5-day forecast section ===
+    const forecastContainer = card.querySelector(".forecast");
+    if (forecastContainer) {
+      forecastContainer.innerHTML = ""; // Clear old data
 
-        // display the forecast icons in weekdays in the DOM
-        const forecastIconContainer = document.querySelector('.weather-icons');
-        const displayForecastIcons = (items:forecastItem[]) => {
-          if (!forecastIconContainer) {
-    console.warn("⚠️ Element '.weather-icons' was not found in the DOM."); 
-    return;
+      const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+      // Generate HTML for each forecast day
+      dailyForecast.forEach((day) => {
+        const date = new Date(day.date);
+        const weekday = weekdays[date.getDay()]
+
+        const dayHTML = `
+          <div class="day">
+            <p class="day-name">${weekday}</p>
+            <img
+              src="./weather_icons/aligned/solid/day/${String(day.condition).padStart(2, "0")}.svg"
+              class="day-icon"
+              alt="${weatherSymbols[day.condition] || ""}"
+            />
+            <p class="day-temp">${day.maxTemp}° / ${day.minTemp}°C</p>
+          </div>
+        `;
+
+        forecastContainer.innerHTML += dayHTML
+      });
+    }
+  } catch (error) {
+    console.error(`Error fetching weather for ${place.name}:`, error)
   }
-            forecastIconContainer.innerHTML = '';
-            // loop through the forecastWeather array and display each item
-            items.forEach((item: any) => {
-                forecastIconContainer.innerHTML += `
-                <div class="forecast-icons">
-                    <img 
-                        src="./weather_icons/aligned/solid/day/${String(item.forecastCondition).padStart(2, '0')}.svg" 
-                        class="weather-icon-forecast"
-                        alt="weather-icon-forecast">
-                </div>
-                `;
-            });
-        };
-        displayForecastIcons(forecastWeather);
+}
 
-        // display forecast temperatures in the DOM
-        const forecastTempContainer = document.querySelector(".temp");
-        const displayForecastTemps = (items:forecastItem[]) => { 
-          if (!forecastTempContainer) {
-    console.warn("⚠️ Element '.temp' was not found in the DOM."); 
-    return;
-  }
-            forecastTempContainer.innerHTML = '';
-            // loop through the forecastWeather array and display each item
-            items.forEach((item: any) => {
-                forecastTempContainer.innerHTML += `
-                <div class="forecast-temps-item">
-                    <p>${item.forecastAirTemp}°c</p>
-                </div>
-                `;
-            }); 
-        };
-        displayForecastTemps(forecastWeather);
+// === Switch to the next city when button is clicked ===
+function nextCity() {
+  currentIndex = (currentIndex + 1) % places.length;
+  fetchWeather(places[currentIndex]!);
+}
 
-        }
-        catch (error) {
-        console.log(`Error caught, ${error}`);
-        }
-};    
-fetchWeather();
+// === Fetch weather for the first city on load ===
+fetchWeather(places[currentIndex]!);
 
-// get today's date
-const today = new Date();
-console.log('today', today);
-
+// === Connect the button click event ===
+document.getElementById("toggle-button")?.addEventListener("click", nextCity)
+    
