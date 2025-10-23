@@ -5,6 +5,13 @@ const places = [
     { name: "Gotland", lat: 57.636, lon: 18.294 },
     { name: "Umeå", lat: 63.8258, lon: 20.263 },
 ];
+// === Background images for each city ===
+const cityBackgrounds = {
+    Stockholm: "./stockholm.png",
+    Uppsala: "./uppsala.png",
+    Gotland: "./gotland.png",
+    Umeå: "./umea2.png",
+};
 // === SMHI weather symbol meanings ===
 const weatherSymbols = {
     1: "Clear sky",
@@ -37,6 +44,13 @@ const weatherSymbols = {
 };
 // === Track the current city being displayed ===
 let currentIndex = 0;
+// === Updated function: change SVG background based on city ===
+const updateBackgroundImage = (cityName) => {
+    const img = document.querySelector("#imagePattern image");
+    if (img) {
+        img.setAttribute("href", cityBackgrounds[cityName]);
+    }
+};
 // === Fetch weather data for a specific city ===
 async function fetchWeather(place) {
     const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${place.lon}/lat/${place.lat}/data.json`;
@@ -78,7 +92,7 @@ async function fetchWeather(place) {
             maxTemp: Math.round(Math.max(...info.temps)),
             condition: info.symbol,
         }))
-            .slice(0, 5); // Only keep next 5 days
+            .slice(1, 6); // Only keep next 5 days
         // === Update the DOM to match the new layout ===
         const card = document.querySelector(".card");
         if (!card)
@@ -127,6 +141,25 @@ async function fetchWeather(place) {
                 forecastContainer.innerHTML += dayHTML;
             });
         }
+        // display the time in the DOM
+        const timeContainer = document.querySelector('.time');
+        const displayTime = () => {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const formattedTime = now.toLocaleDateString('en-US', options);
+            timeContainer.innerHTML = '';
+            timeContainer.innerHTML = `
+            <p>${formattedTime}</p>
+            `;
+        };
+        displayTime();
     }
     catch (error) {
         console.error(`Error fetching weather for ${place.name}:`, error);
@@ -135,7 +168,9 @@ async function fetchWeather(place) {
 // === Switch to the next city when button is clicked ===
 function nextCity() {
     currentIndex = (currentIndex + 1) % places.length;
-    fetchWeather(places[currentIndex]);
+    const place = places[currentIndex];
+    fetchWeather(place);
+    updateBackgroundImage(place.name);
 }
 // === Fetch weather for the first city on load ===
 fetchWeather(places[currentIndex]);

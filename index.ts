@@ -26,6 +26,14 @@ const places: Place[] = [
     { name: "Umeå", lat: 63.8258, lon: 20.263 },
 ]
 
+// === Background images for each city ===
+const cityBackgrounds: Record<string, string> = {
+    Stockholm: "./stockholm.png",
+    Uppsala: "./uppsala.png",
+    Gotland: "./gotland.png",
+    Umeå: "./umea2.png",
+}
+
 // === SMHI weather symbol meanings ===
 const weatherSymbols: Record<number, string> = {
     1: "Clear sky",
@@ -59,6 +67,14 @@ const weatherSymbols: Record<number, string> = {
 
 // === Track the current city being displayed ===
 let currentIndex = 0
+
+// === Updated function: change SVG background based on city ===
+const updateBackgroundImage = (cityName: string) => {
+    const img = document.querySelector("#imagePattern image");
+    if (img) {
+        img.setAttribute("href", cityBackgrounds[cityName]!);
+    }
+} 
 
 // === Fetch weather data for a specific city ===
 async function fetchWeather(place: Place): Promise<void> {
@@ -106,7 +122,7 @@ async function fetchWeather(place: Place): Promise<void> {
                 maxTemp: Math.round(Math.max(...info.temps)),
                 condition: info.symbol,
             }))
-            .slice(0, 5); // Only keep next 5 days
+            .slice(1, 6); // Only keep next 5 days
 
         // === Update the DOM to match the new layout ===
         const card = document.querySelector(".card");
@@ -160,6 +176,27 @@ async function fetchWeather(place: Place): Promise<void> {
                 forecastContainer.innerHTML += dayHTML
             });
         }
+
+        // display the time in the DOM
+        const timeContainer: any = document.querySelector('.time');
+        const displayTime = () => {
+            const now = new Date();
+            const options: Intl.DateTimeFormatOptions = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const formattedTime = now.toLocaleDateString('en-US', options);
+            timeContainer.innerHTML = '';
+            timeContainer.innerHTML = `
+            <p>${formattedTime}</p>
+            `;
+        }
+        displayTime();
+
     } catch (error) {
         console.error(`Error fetching weather for ${place.name}:`, error)
     }
@@ -168,7 +205,9 @@ async function fetchWeather(place: Place): Promise<void> {
 // === Switch to the next city when button is clicked ===
 function nextCity() {
     currentIndex = (currentIndex + 1) % places.length;
-    fetchWeather(places[currentIndex]!);
+    const place=places[currentIndex]!
+    fetchWeather(place!);
+    updateBackgroundImage(place.name)
 }
 
 // === Fetch weather for the first city on load ===

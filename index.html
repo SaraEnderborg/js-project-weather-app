@@ -20,28 +20,27 @@
 
 <body>
     <!-- Main weather card -->
-    <section class="card">
+    <section class="card fade">
         <!-- === HEADER SECTION (top part with gradient) === -->
         <div class="header">
             <svg
                 id="background"
                 width="414"
-                height="458"
+                height="600"
                 viewBox="0 0 414 458"
                 xmlns="http://www.w3.org/2000/svg"
             >
                 <defs>
                     <pattern
                         id="imagePattern"
-                        patternUnits="userSpaceOnUse"
-                        width="414"
-                        height="458"
+                        patternUnits="objectBoundingBox"
+                        width="1"
+                        height="1"
                     >
                         <image
-                            href="./image.png"
-                            width="414"
-                            height="458"
-                            preserveAspectRatio="xMidYMid slice"
+                            href="./stockholm.png" style="filter: brightness(50%);"
+                            preserveAspectRatio="none"
+                            x="-50"
                         />
                     </pattern>
                 </defs>
@@ -66,29 +65,27 @@
                     />
                 </div>
 
+                <div class="time"></div>
+
                 <!-- Sunrise & sunset -->
-                <div class="sun-info">
+                <!-- <div class="sun-info">
                     <p>sunrise: --:--</p>
                     <p>sunset: --:--</p>
-                </div>
+                </div> -->
             </div>
 
             <!-- Next city button -->
             <button id="toggle-button">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    stroke-width="2"
+                <img
+                    id="buttonimg"
+                    src="./buttonimg.png"
+                    alt=""
                 >
-                    <path d="M9 5l7 7-7 7" />
-                </svg>
             </button>
         </div>
 
         <!-- === FORECAST SECTION === -->
-        <div class="forecast">
+        <section class="forecast">
             <!-- Example placeholder (these will be replaced dynamically from TS) -->
             <div class="day">
                 <p class="day-name">Mon</p>
@@ -139,14 +136,23 @@
                 />
                 <p class="day-temp">--° / --°C</p>
             </div>
-        </div>
+        </section>
+
     </section>
+
+    <footer>
+        <h4><span id="cat">🐈</span> Created by 🐈</h4>
+        <h4>Asako Julia Sara</h4>
+    </footer>
 
     <!-- Script -->
     <script
         type="module"
         src="index.js"
     ></script>
+
 </body>
+
+
 
 </html>

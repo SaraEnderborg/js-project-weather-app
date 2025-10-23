@@ -9,18 +9,20 @@
 /* === BODY LAYOUT === */
 body {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #cfd1ff 0%, #ffffff 100%);
+  justify-content: space-around;
+  background: linear-gradient(180deg, #a0a0a0 0%, #ffffff 100%);
   color: #fff;
 }
 
 /* === MAIN CARD === */
 .card {
   position: relative;
-  width: 360px;
-  height: 720px;
+  margin-top: 30px;
+  min-width: 414px;
+  height: 896px;
   background: #ffffff;
   border-radius: 24px;
   overflow: hidden;
@@ -33,7 +35,6 @@ body {
 .header {
   position: relative;
   height: 320px;
-  /* background: linear-gradient(180deg, #9aa8ff 0%, #c6c9ff 100%); */
   border-bottom-left-radius: 100px;
   border-bottom-right-radius: 100px;
   text-align: flex-start;
@@ -49,26 +50,38 @@ body {
   z-index: 0;
 }
 
-/* path {
+path {
   position: absolute;
   width: 414px;
   z-index: 0;
-} */
+}
 
 .summary {
-  padding-top: 50px;
+  padding-top: 90px;
   z-index: 100;
   position: relative;
 }
 
+h1 {
+  font-size: 120px;
+}
+
 h2 {
+  font-size: 34px;
+  margin-bottom: 12px;
   padding-left: 15px;
 }
+
+h3 {
+  font-size: 22px;
+  opacity: 95%;
+  font-weight: 400;
+}
+
 
 
 /* === TEMPERATURE === */
 .temperature {
-  font-size: 120px;
   font-weight: 300;
   margin-top: 10px;
   display: flex;
@@ -77,8 +90,9 @@ h2 {
 }
 
 .temperature span {
+  padding-bottom: 65px;
   font-size: 28px;
-  vertical-align: super;
+  font-weight: 500;
 }
 
 /* === WEATHER ICON === */
@@ -90,16 +104,14 @@ h2 {
 
 /* === LOCATION & CONDITION === */
 .location {
-  font-size: 24px;
   font-weight: 400;
   margin-top: 10px;
 }
 
 .condition {
-  font-size: 18px;
   opacity: 0.9;
   margin-bottom: 10px;
-  margin-top: 10px;
+  margin-top: 20px;
   padding-left: 15px;
 }
 
@@ -110,43 +122,43 @@ h2 {
   gap: 10px;
 }
 
-/* === SUN INFO (sunrise / sunset) === */
-.sun-info {
-  display: flex;
-  justify-content: space-around;
-  font-size: 16px;
-  margin-bottom: 15px;
-  opacity: 0.9;
+.time {
+  justify-self: flex-start;
+  font-size: 20px;
+  padding: 30px 15px;
 }
 
-/* === NEXT CITY BUTTON === */
-#toggle-button {
-  justify-self: flex-end;
-  transform: translateX(-50%);
-  width: 70px;
-  height: 70px;
-  background-color: #6a6dff;
-  border: none;
-  border-radius: 50%;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
+/* === SUN INFO (sunrise / sunset) === */
+/* .sun-info {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 20px 15px;
+  margin-bottom: 15px;
+  opacity: 0.9;
+  font-size: 22px;
+} */
+
+/* === NEXT CITY BUTTON === */
+
+#toggle-button {
+  position: absolute;
+  right: 1px;
+  border: none;
+  background: none;
+  transform: translateX(-50%);
   transition: transform 0.2s ease;
+}
+
+#buttonimg {
+  width: 100px;
+  height: 100px;
 }
 
 #toggle-button:hover {
   transform: translateX(-50%) scale(1.1);
 }
 
-#toggle-button svg {
-  width: 28px;
-  height: 28px;
-  stroke: #fff;
-}
-
-/* === FORECAST SECTION === */
+/* === FORECAST SECTION (Lower section) === */
 .forecast {
   margin-top: 60px;
   color: #333;
@@ -160,9 +172,10 @@ h2 {
 /* Each day line */
 .day {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 14px;
+  padding: 12px 14px;
   border-radius: 10px;
   transition: background 0.3s;
 }
@@ -173,18 +186,36 @@ h2 {
 
 .day-name {
   font-weight: 500;
+  font-size: 20px;
   color: #333;
 }
 
 .day-temp {
   font-weight: 400;
+  font-size: 20px;
   color: #666;
-  font-size: 15px;
 }
 
 .day-icon {
-  width: 28px;
-  height: 28px;
+  position: absolute;
+  left: 190px;
+  width: 50px;
+  height: 50px;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 414px;
+  padding: 20px 0;
+  color: #a0a0a0;
+}
+
+#cat {
+  display: inline-block;
+  transform: scale(-1, 1);
 }
 
 /* === SMOOTH TRANSITIONS === */
