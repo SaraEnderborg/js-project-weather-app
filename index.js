@@ -9,7 +9,7 @@ const places = [
         name: 'gotland',
         lat: 57.499998,
         lon: 18.549997,
-        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.5499978/lat/57.49999/data.json`
+        url: `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.549997/lat/57.49999/data.json`
     },
     {
         name: 'umeå',
@@ -25,7 +25,7 @@ const places = [
     }
 ];
 // const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json?timeseries=24`;
-const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`;
+// const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/18.062639/lat/59.329468/data.json`;
 const hourIndex = 0; // index for current weather data (0 hours ahead)  
 const weatherSymbols = {
     1: "Clear sky",
@@ -60,7 +60,7 @@ let currentWeather = null;
 let forecastWeather = [];
 async function fetchWeather() {
     try {
-        const response = await fetch(weatherURL);
+        const response = await fetch(places.url);
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
