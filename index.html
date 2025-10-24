@@ -19,9 +19,9 @@
 </head>
 
 <body>
-    <!-- Main weather card -->
+    <!-- ===== Main weather card ===== -->
     <section class="card fade">
-        <!-- === HEADER SECTION (top part with gradient) === -->
+        <!-- --- Upper part --- -->
         <div class="header">
             <svg
                 id="background"
@@ -38,7 +38,7 @@
                         height="1"
                     >
                         <image
-                            href="./stockholm.png" style="filter: brightness(50%);"
+                            href="./pictures/stockholm.png" style="filter: brightness(50%);"
                             preserveAspectRatio="none"
                             x="-50"
                         />
@@ -50,12 +50,13 @@
                 />
             </svg>
             <div class="summary">
+                <!-- Temperature -->
                 <h1 class="temperature">--<span>°C</span></h1>
 
-                <!-- Location name -->
+                <!-- Location  -->
                 <h2 class="location">Loading...</h2>
 
-                <!-- Current condition -->
+                <!-- Condition -->
                 <div class="current-condition">
                     <h3 class="condition">Please wait</h3>
                     <img
@@ -65,94 +66,38 @@
                     />
                 </div>
 
+                <!-- Time -->
                 <div class="time"></div>
-
-                <!-- Sunrise & sunset -->
-                <!-- <div class="sun-info">
-                    <p>sunrise: --:--</p>
-                    <p>sunset: --:--</p>
-                </div> -->
             </div>
 
-            <!-- Next city button -->
-            <button id="toggle-button">
+        <!-- --- Toggle button --- -->            
+         <button id="toggle-button">
                 <img
                     id="buttonimg"
-                    src="./buttonimg.png"
+                    src="./pictures/buttonimg.png"
                     alt=""
                 >
             </button>
         </div>
 
-        <!-- === FORECAST SECTION === -->
-        <section class="forecast">
-            <!-- Example placeholder (these will be replaced dynamically from TS) -->
-            <div class="day">
-                <p class="day-name">Mon</p>
-                <img
-                    src="./weather_icons/aligned/solid/day/01.svg"
-                    class="day-icon"
-                    alt="icon"
-                />
-                <p class="day-temp">--° / --°C</p>
-            </div>
-
-            <div class="day">
-                <p class="day-name">Tue</p>
-                <img
-                    src="./weather_icons/aligned/solid/day/02.svg"
-                    class="day-icon"
-                    alt="icon"
-                />
-                <p class="day-temp">--° / --°C</p>
-            </div>
-
-            <div class="day">
-                <p class="day-name">Wed</p>
-                <img
-                    src="./weather_icons/aligned/solid/day/03.svg"
-                    class="day-icon"
-                    alt="icon"
-                />
-                <p class="day-temp">--° / --°C</p>
-            </div>
-
-            <div class="day">
-                <p class="day-name">Thu</p>
-                <img
-                    src="./weather_icons/aligned/solid/day/04.svg"
-                    class="day-icon"
-                    alt="icon"
-                />
-                <p class="day-temp">--° / --°C</p>
-            </div>
-
-            <div class="day">
-                <p class="day-name">Fri</p>
-                <img
-                    src="./weather_icons/aligned/solid/day/05.svg"
-                    class="day-icon"
-                    alt="icon"
-                />
-                <p class="day-temp">--° / --°C</p>
-            </div>
+        <!-- --- Lower part --- -->        
+         <section class="forecast">
         </section>
 
     </section>
 
+    <!-- ===== Footer ===== -->
     <footer>
         <h4><span id="cat">🐈</span> Created by 🐈</h4>
         <h4>Asako | Julia | Sara</h4>
     </footer>
 
-    <!-- Script -->
+    <!-- ===== Script ===== -->
     <script
         type="module"
         src="index.js"
     ></script>
 
 </body>
-
-
 
 </html>
