@@ -4,7 +4,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
- 
 }
 
 /* === BODY LAYOUT === */
@@ -140,6 +139,7 @@ h3 {
   background: none;
   transform: translateX(-50%);
   transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
 #buttonimg {

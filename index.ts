@@ -104,13 +104,12 @@ async function fetchWeather(place: Place): Promise<void> {
         data.timeSeries.forEach((entry: any) => {
             const vt = entry.validTime as string;
             if (!vt) return
-            const dateKey = vt.slice(0, 10); // Only keep YYYY-MM-DD
+            const dateKey = vt.slice(0, 10);
 
             const t = entry.parameters.find((p: any) => p.name === "t")?.values?.[0];
             const sym = entry.parameters.find((p: any) => p.name === "Wsymb2")?.values?.[0];
             if (t === undefined || sym === undefined) return
 
-            // Initialize the day if missing, then push temp
             (groupedByDate[dateKey] ??= { temps: [], symbol: sym }).temps.push(t)
         })
 
