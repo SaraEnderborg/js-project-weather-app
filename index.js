@@ -1,18 +1,18 @@
-// === List of cities ===
+// ===== List of cities =====
 const places = [
     { name: "Stockholm", lat: 59.329468, lon: 18.062639 },
     { name: "Uppsala", lat: 59.8586, lon: 17.6389 },
     { name: "Gotland", lat: 57.636, lon: 18.294 },
     { name: "Umeå", lat: 63.8258, lon: 20.263 },
 ];
-// === Background images for each city ===
+// ===== Background images for each city =====
 const cityBackgrounds = {
-    Stockholm: "./stockholm.png",
-    Uppsala: "./uppsala.png",
-    Gotland: "./gotland.png",
-    Umeå: "./umea2.png",
+    Stockholm: "./pictures/stockholm.png",
+    Uppsala: "./pictures/uppsala.png",
+    Gotland: "./pictures/gotland.png",
+    Umeå: "./pictures/umea.png",
 };
-// === SMHI weather symbol meanings ===
+// ===== SMHI weather symbols  =====
 const weatherSymbols = {
     1: "Clear sky",
     2: "Nearly clear sky",
@@ -42,25 +42,26 @@ const weatherSymbols = {
     26: "Moderate snowfall",
     27: "Heavy snowfall",
 };
-// === Track the current city being displayed ===
+// ===== Track the current city being displayed =====
 let currentIndex = 0;
-// === Updated function: change SVG background based on city ===
+// ===== Updates city background =====
 const updateBackgroundImage = (cityName) => {
     const img = document.querySelector("#imagePattern image");
+    console.log(cityBackgrounds[cityName]);
     if (img) {
         img.setAttribute("href", cityBackgrounds[cityName]);
     }
 };
-// === Fetch weather data for a specific city ===
+// ===== Fetch weather data =====
 async function fetchWeather(place) {
     const weatherURL = `https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${place.lon}/lat/${place.lat}/data.json`;
     try {
-        // Fetch data from SMHI API
+        // --- Fetch data from SMHI API ---
         const response = await fetch(weatherURL);
         if (!response.ok)
             throw new Error(`HTTP error: ${response.status}`);
         const data = await response.json();
-        // === Extract current weather data ===
+        // --- Extract current weather data ---
         const airTempParam = data.timeSeries[0].parameters.find((p) => p.name === "t");
         const symbolParam = data.timeSeries[0].parameters.find((p) => p.name === "Wsymb2");
         const currentWeather = {
@@ -68,23 +69,22 @@ async function fetchWeather(place) {
             condition: symbolParam.values[0],
             validTime: data.timeSeries[0].validTime,
         };
-        // Get readable condition name (ex: "Light rain")
+        // --- Get readable condition name ---
         const actualCondition = weatherSymbols[currentWeather.condition] || "N/A";
-        // === Group forecast data by day ===
+        // --- Group forecast data by day ---
         const groupedByDate = {};
         data.timeSeries.forEach((entry) => {
             const vt = entry.validTime;
             if (!vt)
                 return;
-            const dateKey = vt.slice(0, 10); // Only keep YYYY-MM-DD
+            const dateKey = vt.slice(0, 10);
             const t = entry.parameters.find((p) => p.name === "t")?.values?.[0];
             const sym = entry.parameters.find((p) => p.name === "Wsymb2")?.values?.[0];
             if (t === undefined || sym === undefined)
                 return;
-            // Initialize the day if missing, then push temp
             (groupedByDate[dateKey] ?? (groupedByDate[dateKey] = { temps: [], symbol: sym })).temps.push(t);
         });
-        // === Create a simplified daily forecast array ===
+        // --- Create a simplified daily forecast array ---
         const dailyForecast = Object.entries(groupedByDate)
             .map(([date, info]) => ({
             date,
@@ -93,18 +93,18 @@ async function fetchWeather(place) {
             condition: info.symbol,
         }))
             .slice(1, 6); // Only keep next 5 days
-        // === Update the DOM to match the new layout ===
+        // --- Update the DOM to match the new layout ---
         const card = document.querySelector(".card");
         if (!card)
             return;
-        // === Update the main weather section ===
+        // --- Update the upper part ---
         const temperatureEl = card.querySelector(".temperature");
         const locationEl = card.querySelector(".location");
         const conditionEl = card.querySelector(".condition");
         const iconEl = card.querySelector(".weather-icon");
         const sunriseEl = card.querySelector(".sun-info p:first-child");
         const sunsetEl = card.querySelector(".sun-info p:last-child");
-        // Fill in live weather data
+        // --- Fill in live weather data ---
         if (temperatureEl)
             temperatureEl.innerHTML = `${currentWeather.airTemp}<span>°C</span>`;
         if (locationEl)
@@ -113,35 +113,30 @@ async function fetchWeather(place) {
             conditionEl.textContent = actualCondition;
         if (iconEl)
             iconEl.src = `./weather_icons/aligned/solid/day/${String(currentWeather.condition).padStart(2, "0")}.svg`;
-        // Placeholder sunrise/sunset (can be replaced with real API later)
-        if (sunriseEl)
-            sunriseEl.textContent = "sunrise: 07:32";
-        if (sunsetEl)
-            sunsetEl.textContent = "sunset: 17:56";
-        // === Update the 5-day forecast section ===
+        // --- Update the 5-day forecast section ---
         const forecastContainer = card.querySelector(".forecast");
         if (forecastContainer) {
             forecastContainer.innerHTML = ""; // Clear old data
             const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-            // Generate HTML for each forecast day
+            // --- Generate HTML for each forecast day ---
             dailyForecast.forEach((day) => {
                 const date = new Date(day.date);
                 const weekday = weekdays[date.getDay()];
                 const dayHTML = `
-          <div class="day">
-            <p class="day-name">${weekday}</p>
-            <img
-              src="./weather_icons/aligned/solid/day/${String(day.condition).padStart(2, "0")}.svg"
-              class="day-icon"
-              alt="${weatherSymbols[day.condition] || ""}"
-            />
-            <p class="day-temp">${day.maxTemp}° / ${day.minTemp}°C</p>
-          </div>
-        `;
+                    <div class="day">
+                        <p class="day-name">${weekday}</p>
+                        <img
+                            src="./weather_icons/aligned/solid/day/${String(day.condition).padStart(2, "0")}.svg"
+                            class="day-icon"
+                            alt="${weatherSymbols[day.condition] || ""}"
+                        />
+                        <p class="day-temp">${day.maxTemp}° / ${day.minTemp}°C</p>
+                    </div>
+                    `;
                 forecastContainer.innerHTML += dayHTML;
             });
         }
-        // display the time in the DOM
+        // --- Display the time and date in the DOM ---
         const timeContainer = document.querySelector('.time');
         const displayTime = () => {
             const now = new Date();
@@ -165,16 +160,17 @@ async function fetchWeather(place) {
         console.error(`Error fetching weather for ${place.name}:`, error);
     }
 }
-// === Switch to the next city when button is clicked ===
+// ===== Fetch weather for the first city on load =====
+fetchWeather(places[currentIndex]);
+// ===== Switch to the next city when button is clicked =====
 function nextCity() {
     currentIndex = (currentIndex + 1) % places.length;
     const place = places[currentIndex];
+    console.log(place.name);
     fetchWeather(place);
     updateBackgroundImage(place.name);
 }
-// === Fetch weather for the first city on load ===
-fetchWeather(places[currentIndex]);
-// === Connect the button click event ===
+// ===== Connect the button click event =====
 document.getElementById("toggle-button")?.addEventListener("click", nextCity);
 export {};
 //# sourceMappingURL=index.js.map

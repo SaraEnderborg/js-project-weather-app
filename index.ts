@@ -211,4 +211,4 @@ function nextCity() {
 }
 
 // ===== Connect the button click event =====
-// document.getElementById("toggle-button")?.addEventListener("click", nextCity)
+document.getElementById("toggle-button")?.addEventListener("click", nextCity)
