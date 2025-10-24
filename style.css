@@ -4,6 +4,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Roboto", sans-serif;
+ 
 }
 
 /* === BODY LAYOUT === */
@@ -14,17 +15,18 @@ body {
   align-items: center;
   justify-content: space-around;
   background: linear-gradient(180deg, #dcdcdc 0%, #ffffff 100%);
-  color: #fff;
+  color: #fff; 
 }
 
 /* === MAIN CARD === */
 .card {
   position: relative;
-  margin-top: 30px;
+  margin-top: 0;
   min-width: 414px;
   height: 896px;
   background: #ffffff;
   border-radius: 24px;
+  margin-top: 30px;
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -128,15 +130,6 @@ h3 {
   padding: 30px 15px;
 }
 
-/* === SUN INFO (sunrise / sunset) === */
-/* .sun-info {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px 15px;
-  margin-bottom: 15px;
-  opacity: 0.9;
-  font-size: 22px;
-} */
 
 /* === NEXT CITY BUTTON === */
 
@@ -181,7 +174,7 @@ h3 {
 }
 
 .day:hover {
-  background: rgba(105, 108, 255, 0.08);
+  background: #cccccc;
 }
 
 .day-name {
@@ -198,7 +191,7 @@ h3 {
 
 .day-icon {
   position: absolute;
-  left: 190px;
+  left: 178px;
   width: 50px;
   height: 50px;
 }
