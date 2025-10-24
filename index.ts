@@ -71,7 +71,6 @@ let currentIndex = 0
 // ===== Updates city background =====
 const updateBackgroundImage = (cityName: string) => {
     const img = document.querySelector("#imagePattern image");
-    console.log(cityBackgrounds[cityName]!)
     if (img) {
         img.setAttribute("href", cityBackgrounds[cityName]!);
     } 
@@ -205,7 +204,6 @@ fetchWeather(places[currentIndex]!);
 function nextCity() {
     currentIndex = (currentIndex + 1) % places.length;
     const place=places[currentIndex]!
-    console.log(place.name)
     fetchWeather(place!);
     updateBackgroundImage(place.name)
 }
